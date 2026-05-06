@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>MAZE ESCAPE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ══════════════ START / MENU SCREEN ══════════════ -->
+  <div id="menuScreen" class="screen active">
+    <div class="menu-bg">
+      <div class="grid-overlay"></div>
+      <div class="glow-orb orb1"></div>
+      <div class="glow-orb orb2"></div>
+      <div class="glow-orb orb3"></div>
+    </div>
+    <div class="menu-inner">
+      <div class="logo-wrap">
+        <div class="logo-ball"></div>
+        <div class="logo-text">
+          <span class="logo-main">MAZE</span>
+          <span class="logo-sub">ESCAPE</span>
+        </div>
+      </div>
+      <p class="menu-desc">미로 중심에서 탈출하라.<br>몬스터에게 잡히지 마라.</p>
+
+      <div class="difficulty-section">
+        <p class="diff-label">난이도 선택</p>
+        <div class="diff-cards">
+
+          <button class="diff-card" data-diff="easy">
+            <div class="diff-icon">😊</div>
+            <div class="diff-name">초급</div>
+            <div class="diff-info">
+              <span>작은 미로</span>
+              <span>몬스터 2~3마리</span>
+              <span>단순 배회</span>
+            </div>
+          </button>
+
+          <button class="diff-card selected" data-diff="normal">
+            <div class="diff-badge">추천</div>
+            <div class="diff-icon">😤</div>
+            <div class="diff-name">중급</div>
+            <div class="diff-info">
+              <span>중간 미로</span>
+              <span>몬스터 4~5마리</span>
+              <span>7초 추격</span>
+            </div>
+          </button>
+
+          <button class="diff-card" data-diff="hard">
+            <div class="diff-icon">😱</div>
+            <div class="diff-name">고급</div>
+            <div class="diff-info">
+              <span>대형 미로</span>
+              <span>몬스터 5~6마리</span>
+              <span>전체 추격 9~10초</span>
+            </div>
+          </button>
+
+        </div>
+      </div>
+
+      <button id="startBtn" class="btn-start">게임 시작</button>
+
+      <div class="best-row">
+        <span>🏆 최고기록</span>
+        <span id="menuBest">–</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ HUD ══════════════ -->
+  <div id="hud" class="hidden">
+    <div class="hud-left">
+      <div class="hud-item">
+        <span class="hud-label">TIME</span>
+        <span class="hud-value" id="hudTime">0:00</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">BEST</span>
+        <span class="hud-value" id="hudBest">–</span>
+      </div>
+    </div>
+    <div class="hud-center">
+      <div id="alertBanner" class="alert-banner hidden"></div>
+    </div>
+    <div class="hud-right">
+      <div id="diffBadge" class="diff-badge-hud"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════ GAME CANVAS ══════════════ -->
+  <canvas id="gameCanvas"></canvas>
+
+  <!-- ══════════════ MOBILE D-PAD ══════════════ -->
+  <div id="dpad" class="hidden">
+    <div class="dpad-grid">
+      <button class="dpad-btn" data-dir="up">▲</button>
+      <button class="dpad-btn" data-dir="left">◀</button>
+      <div class="dpad-center">●</div>
+      <button class="dpad-btn" data-dir="right">▶</button>
+      <button class="dpad-btn" data-dir="down">▼</button>
+    </div>
+  </div>
+
+  <!-- ══════════════ PAUSE OVERLAY ══════════════ -->
+  <div id="pauseOverlay" class="screen hidden">
+    <div class="pause-box">
+      <div class="pause-title">PAUSED</div>
+      <button id="resumeBtn" class="btn-start small">▶ 계속하기</button>
+      <button id="quitBtn"   class="btn-ghost small">🏠 메뉴로</button>
+    </div>
+  </div>
+
+  <!-- ══════════════ CLEAR SCREEN ══════════════ -->
+  <div id="clearScreen" class="screen hidden">
+    <div class="result-box clear-box">
+      <div class="result-emoji">🎉</div>
+      <div class="result-title">ESCAPED!</div>
+      <div class="result-sub">미로를 탈출했다!</div>
+      <div class="result-stats">
+        <div class="stat-row"><span>클리어 시간</span><span id="clearTime">–</span></div>
+        <div class="stat-row best-row-r"><span>🏆 최고기록</span><span id="clearBest">–</span></div>
+      </div>
+      <div id="newRec" class="new-rec hidden">✨ NEW RECORD!</div>
+      <button id="clearRetry" class="btn-start">🔄 다시 하기</button>
+      <button id="clearMenu"  class="btn-ghost">🏠 메뉴로</button>
+    </div>
+  </div>
+
+  <!-- ══════════════ DEAD SCREEN ══════════════ -->
+  <div id="deadScreen" class="screen hidden">
+    <div class="result-box dead-box">
+      <div class="result-emoji">💀</div>
+      <div class="result-title">CAUGHT!</div>
+      <div class="result-sub">몬스터에게 잡혔다!</div>
+      <div class="result-stats">
+        <div class="stat-row"><span>생존 시간</span><span id="deadTime">–</span></div>
+      </div>
+      <button id="deadRetry" class="btn-start">🔄 다시 하기</button>
+      <button id="deadMenu"  class="btn-ghost">🏠 메뉴로</button>
+    </div>
+  </div>
+
+  <!-- ══════════════ PAUSE BTN ══════════════ -->
+  <button id="pauseBtn" class="pause-fab hidden">⏸</button>
+
+  <script src="script.js"></script>
+</body>
+</html>
